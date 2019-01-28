@@ -6,7 +6,13 @@ class Example extends React.Component {
 
   render() {
 
-    const columns = ["Name", "Title", "Location", "Age", "Salary"];
+    const columns = [
+      "Name",
+      "Title",
+      "Location",
+      "Age",
+      { name: "Salary", options: { hint: "USD / year"}}
+    ];
 
     const data = [
       ["Gabby George", "Business Analyst", "Minneapolis", 30, 100000],
@@ -68,11 +74,15 @@ class Example extends React.Component {
       onFilterChange: (column, filters) => {
         console.log(column, filters);
       },
-      onCellClick: (cellIndex, rowIndex) => {
-        console.log(cellIndex, rowIndex);
+      onCellClick: (cellData, cellMeta) => {
+        console.log(cellData, cellMeta);
       },
       onRowClick: (rowData, rowState) => {
         console.log(rowData, rowState);
+      },
+      isRowSelectable: (dataIndex) => {
+        //prevents selection of row with title "Attorney"
+        return data[dataIndex][1] != "Attorney";
       }
     };
 

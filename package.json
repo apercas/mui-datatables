@@ -1,6 +1,6 @@
 {
   "name": "mui-datatables",
-  "version": "2.0.0-beta-32",
+  "version": "2.0.0-beta-53",
   "description": "Datatables for React using Material-UI",
   "main": "dist/index.js",
   "files": [
@@ -94,6 +94,7 @@
     "classnames": "^2.2.5",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
+    "lodash.isequal": "^4.5.0",
     "lodash.memoize": "^4.1.2",
     "lodash.merge": "^4.6.0",
     "prop-types": "^15.6.0",
@@ -101,10 +102,10 @@
   },
   "side-effects": false,
   "nyc": {
-    "lines": 70,
-    "statements": 70,
-    "functions": 70,
-    "branches": 70,
+    "lines": 50,
+    "statements": 50,
+    "functions": 50,
+    "branches": 50,
     "check-coverage": true,
     "all": true,
     "include": [
