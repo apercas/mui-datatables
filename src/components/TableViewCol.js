@@ -6,8 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
-import Draggable from 'react-draggable';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 export const defaultViewColStyles = theme => ({
   root: {
@@ -43,6 +43,14 @@ export const defaultViewColStyles = theme => ({
   },
 });
 
+const grid = 8;
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  display: 'flex',
+  justifyContent:'space-between',
+  ...draggableStyle,
+});
+
 class TableViewCol extends React.Component {
   static propTypes = {
     /** Columns used to describe table */
@@ -56,83 +64,88 @@ class TableViewCol extends React.Component {
   };
 
   state = {
-      activeDrags: 0,
-      deltaPosition: {
-        x: 0, y: 0
-      }
+      columns : this.props.columns,
     };
-
-  handleDrag =(e, ui) => {
-    const {x, y} = this.state.deltaPosition;
-    this.setState({
-      deltaPosition: {
-        x: x + ui.deltaX,
-        y: y + ui.deltaY,
-      }
-    });
-  };
-
-  onStart = () => {
-    this.setState({activeDrags: ++this.state.activeDrags});
-  };
-
-  onStop = () => {
-    this.setState({activeDrags: --this.state.activeDrags});
-  };
 
   handleColChange = index => {
     this.props.onColumnUpdate(index);
   };
 
-  render() {
-    const { classes, columns, options } = this.props;
-    const textLabels = options.textLabels.viewColumns;
-    const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
+  onDragEnd = (result) => {
+    const columns = this.props.columns;
+    const col = columns[result.source.index];
+    columns.splice(result.source.index,1);
+    columns.splice(result.destination.index,0,col);
+    this.setState({columns});
+  }
 
+  render() {
+    const { classes, options } = this.props;
+    const textLabels = options.textLabels.viewColumns;
     return (
-      <FormControl component={'fieldset'} className={classes.root} aria-label={textLabels.titleAria}>
-        <Typography variant="caption" className={classes.title}>
-          {textLabels.title}
-        </Typography>
-        <FormGroup className={classes.formGroup}>
-          {columns.map((column, index) => {
-            return (
-              column.display !== 'excluded' &&
-              column.viewColumns !== false && (
-                <Draggable handle="span" {...dragHandlers} axis = 'y' key={index}>
-                  <div style={{display: 'flex', justifyContent:'space-between'}}>
-                    <FormControlLabel
-                          
-                          classes={{
-                            root: classes.formControl,
-                            label: classes.label,
-                          }}
-                          control={
-                            <Checkbox
-                              className={classes.checkbox}
-                              classes={{
-                                root: classes.checkboxRoot,
-                                checked: classes.checked,
-                              }}
-                              onChange={this.handleColChange.bind(null, index)}
-                              checked={column.display === 'true'}
-                              value={column.name}
-                            />
-                          }
-                          label={column.name}
-                        />
-                    <span style={{cursor: 'grab', position: 'relative', top: 4}}><DragHandleIcon /></span>
+        <FormControl component={'fieldset'} className={classes.root} aria-label={textLabels.titleAria}>
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <div>
+              <Typography variant="caption" className={classes.title}>
+                  {textLabels.title}
+                </Typography>
+                <Droppable droppableId="droppable">
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                    >
+                      <FormGroup className={classes.formGroup}>
+                        {this.state.columns.map((column, index) => {
+                          return (
+                            column.display !== 'excluded' &&
+                            column.viewColumns !== false && (
+                              <Draggable key={column.name} draggableId={column.name} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  style={getItemStyle(
+                                    snapshot.isDragging,
+                                    provided.draggableProps.style
+                                  )}
+                                >
+                                  <FormControlLabel
+                                        
+                                        classes={{
+                                          root: classes.formControl,
+                                          label: classes.label,
+                                        }}
+                                        control={
+                                          <Checkbox
+                                            className={classes.checkbox}
+                                            classes={{
+                                              root: classes.checkboxRoot,
+                                              checked: classes.checked,
+                                            }}
+                                            onChange={this.handleColChange.bind(null, index)}
+                                            checked={column.display === 'true'}
+                                            value={column.name}
+                                          />
+                                        }
+                                        label={column.name}
+                                      />
+                                  <span style={{cursor: 'grab', position: 'relative', top: 4}}><DragHandleIcon /></span>
+                                </div>
+                                )}
+                            </Draggable>
+                              )
+                            );
+                        }
+                      )}
+                    </FormGroup>
                   </div>
-                </Draggable>
-                )
-              );
-          }
-          )
-          }
-        </FormGroup>
+                )}
+              </Droppable>
+            </div>
+        </DragDropContext>
       </FormControl>
     );
-
   }
 }
 
