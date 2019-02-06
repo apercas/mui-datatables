@@ -6,6 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
+import Draggable from 'react-draggable';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
 
 export const defaultViewColStyles = theme => ({
   root: {
@@ -53,6 +55,31 @@ class TableViewCol extends React.Component {
     classes: PropTypes.object,
   };
 
+  state = {
+      activeDrags: 0,
+      deltaPosition: {
+        x: 0, y: 0
+      }
+    };
+
+  handleDrag =(e, ui) => {
+    const {x, y} = this.state.deltaPosition;
+    this.setState({
+      deltaPosition: {
+        x: x + ui.deltaX,
+        y: y + ui.deltaY,
+      }
+    });
+  };
+
+  onStart = () => {
+    this.setState({activeDrags: ++this.state.activeDrags});
+  };
+
+  onStop = () => {
+    this.setState({activeDrags: --this.state.activeDrags});
+  };
+
   handleColChange = index => {
     this.props.onColumnUpdate(index);
   };
@@ -60,6 +87,7 @@ class TableViewCol extends React.Component {
   render() {
     const { classes, columns, options } = this.props;
     const textLabels = options.textLabels.viewColumns;
+    const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
 
     return (
       <FormControl component={'fieldset'} className={classes.root} aria-label={textLabels.titleAria}>
@@ -71,32 +99,40 @@ class TableViewCol extends React.Component {
             return (
               column.display !== 'excluded' &&
               column.viewColumns !== false && (
-                <FormControlLabel
-                  key={index}
-                  classes={{
-                    root: classes.formControl,
-                    label: classes.label,
-                  }}
-                  control={
-                    <Checkbox
-                      className={classes.checkbox}
-                      classes={{
-                        root: classes.checkboxRoot,
-                        checked: classes.checked,
-                      }}
-                      onChange={this.handleColChange.bind(null, index)}
-                      checked={column.display === 'true'}
-                      value={column.name}
-                    />
-                  }
-                  label={column.name}
-                />
-              )
-            );
-          })}
+                <Draggable handle="span" {...dragHandlers} axis = 'y' key={index}>
+                  <div style={{display: 'flex', justifyContent:'space-between'}}>
+                    <FormControlLabel
+                          
+                          classes={{
+                            root: classes.formControl,
+                            label: classes.label,
+                          }}
+                          control={
+                            <Checkbox
+                              className={classes.checkbox}
+                              classes={{
+                                root: classes.checkboxRoot,
+                                checked: classes.checked,
+                              }}
+                              onChange={this.handleColChange.bind(null, index)}
+                              checked={column.display === 'true'}
+                              value={column.name}
+                            />
+                          }
+                          label={column.name}
+                        />
+                    <span style={{cursor: 'grab', position: 'relative', top: 4}}><DragHandleIcon /></span>
+                  </div>
+                </Draggable>
+                )
+              );
+          }
+          )
+          }
         </FormGroup>
       </FormControl>
     );
+
   }
 }
 
