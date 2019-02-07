@@ -559,6 +559,14 @@ class MUIDataTable extends React.Component {
     );
   };
 
+  reorderColumns = columns => {
+    this.setState({columns});
+  }
+
+  reorderData = displayData => {
+    this.setState({displayData});
+  }
+
   getSortDirection(column) {
     return column.sortDirection === 'asc' ? 'ascending' : 'descending';
   }
@@ -959,6 +967,8 @@ class MUIDataTable extends React.Component {
             title={title}
             toggleViewColumn={this.toggleViewColumn}
             setTableAction={this.setTableAction}
+            reorderColumns={this.reorderColumns}
+            reorderData={this.reorderData}
           />
         )}
         <TableFilterList options={this.options} filterList={filterList} filterUpdate={this.filterUpdate} />

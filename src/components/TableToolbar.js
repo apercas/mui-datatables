@@ -126,6 +126,8 @@ class TableToolbar extends React.Component {
       options,
       classes,
       columns,
+      reorderColumns,
+      reorderData,
       filterData,
       filterList,
       filterUpdate,
@@ -200,7 +202,13 @@ class TableToolbar extends React.Component {
                 </IconButton>
               }
               content={
-                <TableViewCol data={data} columns={columns} options={options} onColumnUpdate={toggleViewColumn} />
+                <TableViewCol 
+                data={data} 
+                columns={columns} 
+                options={options} 
+                onColumnUpdate={toggleViewColumn} 
+                onColumnReorder={reorderColumns}
+                onDataReorder={reorderData} />
               }
             />
           )}

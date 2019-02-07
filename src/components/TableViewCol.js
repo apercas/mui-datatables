@@ -65,18 +65,35 @@ class TableViewCol extends React.Component {
 
   state = {
       columns : this.props.columns,
+      data : this.props.data,
     };
 
   handleColChange = index => {
     this.props.onColumnUpdate(index);
   };
 
-  onDragEnd = (result) => {
-    const columns = this.props.columns;
+
+  rearrangeColumns = (result) => {
+    const columns = this.state.columns;
     const col = columns[result.source.index];
     columns.splice(result.source.index,1);
     columns.splice(result.destination.index,0,col);
-    this.setState({columns});
+    this.props.onColumnReorder(columns);
+  };
+
+  rearrangeData = (result) => {
+    const data = this.state.data;
+    data.map(d => {
+      const dt = d.data[result.source.index];
+      d.data.splice(result.source.index,1);
+      d.data.splice(result.destination.index,0,dt);
+    });
+    this.props.onDataReorder(data);
+  }
+
+  onDragEnd = (result) => {
+    this.rearrangeColumns(result);
+    this.rearrangeData(result);
   }
 
   render() {
@@ -111,7 +128,6 @@ class TableViewCol extends React.Component {
                                   )}
                                 >
                                   <FormControlLabel
-                                        
                                         classes={{
                                           root: classes.formControl,
                                           label: classes.label,
