@@ -45,7 +45,7 @@ export const defaultViewColStyles = theme => ({
 
 const grid = 8;
 
-const getItemStyle = (isDragging, draggableStyle) => ({
+const getItemStyle = (draggableStyle) => ({
   display: 'flex',
   justifyContent:'space-between',
   ...draggableStyle,
@@ -123,7 +123,6 @@ class TableViewCol extends React.Component {
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                   style={getItemStyle(
-                                    snapshot.isDragging,
                                     provided.draggableProps.style
                                   )}
                                 >

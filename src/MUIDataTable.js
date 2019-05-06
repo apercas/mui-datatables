@@ -563,8 +563,11 @@ class MUIDataTable extends React.Component {
     this.setState({columns});
   }
 
-  reorderData = displayData => {
-    this.setState({displayData});
+  reorderData = data => {
+    this.setState({
+      data : data,
+      displayData : data,
+    });
   }
 
   getSortDirection(column) {
